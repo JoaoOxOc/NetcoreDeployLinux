@@ -8,6 +8,7 @@
 
 - apply execution permission to netcore_deploy.sh file: chmod +x netcore_deploy.sh
 - run netcore_deploy.sh: ./netcore_deploy.sh
+- follow the instructions in each menu option of the script
 
 ## tutorial
 
