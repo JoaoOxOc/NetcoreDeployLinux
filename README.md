@@ -16,5 +16,5 @@
 
 ## warnings
 
-# the script has only been tested in ubuntu version 18.04
-# But, it is configured to run in: Mint, Debian, CentOS, Fedora, Arch Linux and RedHat. Feel free to open issues if necessary, when testing with any of this Linux versions, or just create a pull request helping this public project.
+### the script has only been tested in ubuntu version 18.04
+### But, it is configured to run in: Mint, Debian, CentOS, Fedora, Arch Linux and RedHat. Feel free to open issues if necessary, when testing with any of this Linux versions, or just create a pull request helping this public project.
