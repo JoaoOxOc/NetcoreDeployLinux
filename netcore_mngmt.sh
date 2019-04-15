@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $(dirname "$0")/utils.sh
+source $(dirname "$0")/ftp_gest.sh
 
 function installNetcore () {
 	local k
@@ -239,9 +240,10 @@ function deployNetcoreApp () {
 	chmod -R 777 /home/$user/.dotnet/
 
 	echo ' '
-	echo "# Creating app directory '$baseAppDir/$appDir' and applying permissions to '$user'..."
-	mkdir $baseAppDir/$appDir | tee -a netcore_deploy_debug.txt
-	setfacl -R -m u:$user:rwx $baseAppDir/$appDir | tee -a netcore_deploy_debug.txt
+	echo "# Creating app directory '$baseAppDir/$appDir' and applying permissions to '$user' and also the FTP share..."
+	ftpShareAux $baseAppDir $appDir $user
+	#mkdir $baseAppDir/$appDir | tee -a netcore_deploy_debug.txt
+	#setfacl -R -m u:$user:rwx $baseAppDir/$appDir | tee -a netcore_deploy_debug.txt
 
 	echo ' '
 	echo "# Now, upload app content to $baseAppDir/$appDir before continue (maybe through FTP with the user '$user')"

@@ -163,6 +163,31 @@ function installFtpServer () {
         read k
 }
 
+function ftpShareAux() {
+	echo "Permitting $3 in $1/$2..."
+	mkdir $1/$2  | tee -a netcore_deploy_debug.txt
+        touch /etc/vsftpd_user_conf/$3
+        setfacl -R -m u:$3:rwx $1/$2 | tee -a netcore_deploy_debug.txt
+	usermod -d $1/$2 $3
+
+        echo "Enable writting in $1/$2 for $3 through FTP..."
+        echo -e "local_root=$1/$2" >> /etc/vsftpd_user_conf/$3 | tee -a netcore_deploy_debug.txt
+
+        echo ' '
+        echo "# chroot Config applied in /etc/vsftpd_user_conf/$3 for $1/$2 directory. Verify the file if you need to"
+        
+        echo '# Restarting VSFTPD...'
+        systemctl restart vsftpd | tee -a netcore_deploy_debug.txt
+        if [ $? -eq 0 ]
+        then
+                echo ' '
+                echo "# VSFTPD config applied for user $3"
+        else
+                echo ' '
+                echo "# error in /etc/vsftpd_user_conf/$3. Verify logs (cat netcore_deploy_debug.txt)"
+        fi
+}
+
 function addFtpShare () {
 	local k
 	local opt
@@ -208,30 +233,8 @@ function addFtpShare () {
                         echo "   The directory '$baseUserDir/$userDir' already exists. Change '$userDir' to another name"
                 fi
         done
-
-
-        echo "Permitting $user in $baseUserDir/$userDir..."
-	mkdir $baseUserDir/$userDir
-        touch /etc/vsftpd_user_conf/$user
-        setfacl -R -m u:$user:rwx $baseUserDir/$userDir | tee -a netcore_deploy_debug.txt
-	usermod -d $baseUserDir/$userDir $user
-
-        echo "Enable writting in $baseUserDir/$userDir for $user through FTP..."
-        echo -e "local_root=$baseUserDir/$userDir" >> /etc/vsftpd_user_conf/$user | tee -a netcore_deploy_debug.txt
-
-        echo ' '
-        echo "# chroot Config applied in /etc/vsftpd_user_conf/$user for $baseUserDir/$userDir directory. Verify the file if you need to"
-        
-        echo '# Restarting VSFTPD...'
-        systemctl restart vsftpd | tee -a netcore_deploy_debug.txt
-        if [ $? -eq 0 ]
-        then
-                echo ' '
-                echo "# VSFTPD config applied for user $user"
-        else
-                echo ' '
-                echo "# error in /etc/vsftpd_user_conf/$user. Verify logs (cat netcore_deploy_debug.txt)"
-        fi
+		
+		ftpShareAux $baseUserDir $userDir $user
 	
 	echo ' '
         echo '::: Press any key to go back to main menu'
